@@ -63,7 +63,13 @@ php artisan vendor:publish --tag=ebcron
 
 ## Configuration
 
-In order for Leader Selection to run the environmental variable **USE_CRON** must be present and **true**. This can be done by including it in your **.env** or, for EB, in the environment's configuration section.
+In order for Leader Selection to run a few environmental variables must be present:
+ 
+* **USE_CRON** = true -- Must be set in order for Leader Selection to occur. (This can be used to prevent Selection from occurring on undesired environments IE Workers, etc.)
+* **AWS_ACCESS_KEY_ID** -- Needed for read-only access to ec2 client
+* **AWS_SECRET_ACCESS_KEY** -- Needed for read-only access to ec2 client
+ 
+These can be included in your **.env** or, for EB, in the environment's configuration section.
 
 ## Contributing
 
