@@ -52,7 +52,7 @@ composer require "foxxmd/laravel-elasticbeanstalk-cron"
 After adding the package, add the ServiceProvider to the providers array in `config/app.php`
 
 ```php
-FoxxMD\LaravelElasticBeanstalkCron\LaravelElasticBeanstalkCronProvider::class
+\FoxxMD\LaravelElasticBeanstalkCron\ElasticBeanstalkCronProvider::class
 ```
 
 Then, publish the **.ebextensions** folder and configuration file.
