@@ -1,12 +1,12 @@
-# Laravel 5 Elastic Beanstalk CRON Manager
+# Laravel 5 Task Scheduler with Elastic Beanstalk
 
 *Ensure one instance in an Elastic Beanstalk environment is running Laravel's Scheduler*
 
-A common [problem](https://stackoverflow.com/questions/14077095/aws-elastic-beanstalk-running-a-cronjob) [many](http://culttt.com/2016/02/08/setting-up-and-using-cron-jobs-with-laravel-and-aws-elastic-beanstalk/) [people](https://medium.com/@joelennon/running-cron-jobs-on-amazon-web-services-aws-elastic-beanstalk-a41d91d1c571#.i53d41sci) have encountered with Amazon's [Elastic Beanstalk](https://aws.amazon.com/elasticbeanstalk/) is maintaining a single instance in an environment that runs CRON jobs. Difficulties arise because auto-scaling does not guarantee any instance is run indefinitely and there are no "master-slave" relationships within an environment to differentiate one instance from the rest.
+A common [problem](https://stackoverflow.com/questions/14077095/aws-elastic-beanstalk-running-a-cronjob) [many](http://culttt.com/2016/02/08/setting-up-and-using-cron-jobs-with-laravel-and-aws-elastic-beanstalk/) [people](https://medium.com/@joelennon/running-cron-jobs-on-amazon-web-services-aws-elastic-beanstalk-a41d91d1c571#.i53d41sci) have encountered with Amazon's [Elastic Beanstalk](https://aws.amazon.com/elasticbeanstalk/) is maintaining a single instance in an environment that runs Laravel's Task Scheduler. Difficulties arise because auto-scaling does not guarantee any instance is run indefinitely and there are no "master-slave" relationships within an environment to differentiate one instance from the rest.
 
-Although Amazon has provided a [solution](http://stackoverflow.com/a/28719447/1469797) it involves setting up a worker tier and then, potentially, creating new routes/methods for implementing the jobs that need to be run. Yuck!
+Although Amazon has provided a [solution](http://stackoverflow.com/a/28719447/1469797) it involves setting up a worker tier and then, potentially, creating new routes/methods for implementing the tasks that need to be run. Yuck!
 
-**This package provides a simple, zero-setup solution for maintaining one instance within an Elastic Beanstalk environment that runs CRON jobs.**
+**This package provides a simple, zero-setup solution for maintaining one instance within an Elastic Beanstalk environment that runs the Task Scheduler.**
 
 ## How Does It Work?
 
@@ -16,11 +16,11 @@ Glad you asked! The below process **is completely automated** and only requires 
 
 EB applications can contain a [folder](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/ebextensions.html) that provides advanced configuration for an EB environment, called `.ebextensions`.
 
-This package provides a configuration file that runs two commands on deployment (every instance initialization) that setup the conditions needed to run CRON jobs on one instance:
+This package provides a configuration file that runs two commands on deployment (every instance initialization) that setup the conditions needed to run the Task Schedler on one instance:
 
 ### 2. Run `system:start:leaderselection`
 
-This is the first command that is run on deployment. It configures the instance's CRON to run **Leader Selection** at a configured interval (default = 5 minutes)
+This is the first command that is run on deployment. It configures the instance's Cron to run **Leader Selection** at a configured interval (default = 5 minutes)
 
 ### 3. Run **Leader Selection** `aws:configure:leader`
 
@@ -35,11 +35,11 @@ If this instance is the earliest launched then it is deemed the **Leader** and r
 
 ### 4. Run `system:start:cron`
 
-This command is run **only if the current instance running Leader Selection is the Leader**. It inserts another entry in the instance's CRON to run [Laravel's Scheduler](https://laravel.com/docs/5.1/scheduling).
+This command is run **only if the current instance running Leader Selection is the Leader**. It inserts another entry in the instance's Cron to run [Laravel's Scheduler](https://laravel.com/docs/5.1/scheduling).
 
 ### That's it!
 
-Now only one instance, the earliest launched, will have the scheduler inserted into its CRON. If that instance is terminated by auto-scaling a new Leader will be chosen within 5 minutes (or the configured interval) from the remaining running instances.
+Now only one instance, the earliest launched, will have the scheduler inserted into its Cron. If that instance is terminated by auto-scaling a new Leader will be chosen within 5 minutes (or the configured interval) from the remaining running instances.
 
 ## Installation
 
