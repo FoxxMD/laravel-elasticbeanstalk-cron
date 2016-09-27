@@ -28,8 +28,11 @@ class ConfigureLeaderCommand extends Command
     public function __construct()
     {
         parent::__construct();
+
+        $region = getenv('AWS_REGION') ?: 'us-east-1';
+
         $client         = new Ec2Client([
-                                            'region'  => 'us-east-1',
+                                            'region'  => $region,
                                             'version' => 'latest'
                                         ]);
         $this->ecClient = $client;

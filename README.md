@@ -68,6 +68,7 @@ In order for Leader Selection to run a few environmental variables must be prese
 * **USE_CRON** = true -- Must be set in order for Leader Selection to occur. (This can be used to prevent Selection from occurring on undesired environments IE Workers, etc.)
 * **AWS_ACCESS_KEY_ID** -- Needed for read-only access to ec2 client
 * **AWS_SECRET_ACCESS_KEY** -- Needed for read-only access to ec2 client
+* **AWS_REGION** -- Sets which AWS region when looking using the ec2 client, defaults to `us-east-1` if not set.
  
 These can be included in your **.env** or, for EB, in the environment's configuration section.
 
