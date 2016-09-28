@@ -3,6 +3,7 @@
 namespace FoxxMD\LaravelElasticBeanstalkCron\Console\System;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class SetupLeaderSelectionCRONCommand extends Command
 {
@@ -19,11 +20,23 @@ class SetupLeaderSelectionCRONCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Configure this system\'s CRON to periodically (every 5 minutes) run leader selection.';
+    protected $description = "Configure this system's CRON to periodically (every 5 minutes) run leader selection.";
 
-    public function __construct()
+    /**
+     * @var ConfigRepository
+     */
+    private $config;
+
+    /**
+     * SetupLeaderSelectionCRONCommand constructor.
+     *
+     * @param ConfigRepository $config
+     */
+    public function __construct(ConfigRepository $config)
     {
         parent::__construct();
+
+        $this->config = $config;
     }
 
     public function handle()
@@ -42,10 +55,16 @@ class SetupLeaderSelectionCRONCommand extends Command
         if (!is_null($output) && strpos($output, 'aws:configure:leader') !== false) {
             $this->info('Already found Leader Selection entry! Not adding.');
         } else {
+            $interval = $this->config->get('elasticbeanstalkcron.interval', 5);
+
             // using opt..envvars makes sure that environmental variables are loaded before we run artisan
             // http://georgebohnisch.com/laravel-task-scheduling-working-aws-elastic-beanstalk-cron/
-            $interval = config('elasticbeanstalkcron.interval', 5);
-            file_put_contents('/tmp/crontab.txt', $output . "*/$interval * * * * . /opt/elasticbeanstalk/support/envvars && /usr/bin/php /var/app/current/artisan aws:configure:leader >> /dev/null 2>&1" . PHP_EOL);
+            file_put_contents(
+                '/tmp/crontab.txt',
+                $output . "*/$interval * * * * . /opt/elasticbeanstalk/support/envvars &&" .
+                " /usr/bin/php /var/app/current/artisan aws:configure:leader >> /dev/null 2>&1" . PHP_EOL
+            );
+
             echo exec('crontab /tmp/crontab.txt');
         }
 
