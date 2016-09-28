@@ -1,6 +1,5 @@
 <?php
 
-
 namespace FoxxMD\LaravelElasticBeanstalkCron\Console\AWS;
 
 use Aws\Ec2\Ec2Client;
@@ -23,15 +22,20 @@ class ConfigureLeaderCommand extends Command
      */
     protected $description = 'Configure leader ec2 instance';
 
+    /**
+     * @var Ec2Client
+     */
     protected $ecClient;
 
     public function __construct()
     {
         parent::__construct();
-        $client         = new Ec2Client([
-                                            'region'  => 'us-east-1',
-                                            'version' => 'latest'
-                                        ]);
+
+        $client = new Ec2Client([
+            'region'  => 'us-east-1',
+            'version' => 'latest',
+        ]);
+
         $this->ecClient = $client;
     }
 
@@ -45,17 +49,19 @@ class ConfigureLeaderCommand extends Command
             $ch = curl_init('http://169.254.169.254/latest/meta-data/instance-id'); //magic ip from AWS
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            if ($result = curl_exec($ch)) {
 
+            if ($result = curl_exec($ch)) {
                 $this->info('Instance ID: ' . $result);
 
                 // Get this instance metadata so we can find the environment it's running in
-                $tags = $info = $this->ecClient->describeInstances(['Filters' => [
-                    ['Name'   => 'instance-id',
-                     'Values' => [$result]
-                    ]
-                ]
-                                                                   ])->get('Reservations')[0]['Instances'][0]['Tags'];
+                $tags = $info = $this->ecClient->describeInstances([
+                    'Filters' => [
+                        [
+                            'Name'   => 'instance-id',
+                            'Values' => [$result],
+                        ],
+                    ],
+                ])->get('Reservations')[0]['Instances'][0]['Tags'];
 
                 // Get environment name
                 $environmentName = F\first($tags, function ($tagArray) {
@@ -66,12 +72,14 @@ class ConfigureLeaderCommand extends Command
                 $this->info('Getting Instances with Environment: ' . $environmentName);
 
                 // Get instances that have this environment tagged
-                $info      = $this->ecClient->describeInstances(['Filters' => [
-                    ['Name'   => 'tag-value',
-                     'Values' => [$environmentName]
-                    ]
-                ]
-                                                                ]);
+                $info = $this->ecClient->describeInstances([
+                    'Filters' => [
+                        [
+                            'Name'   => 'tag-value',
+                            'Values' => [$environmentName],
+                        ],
+                    ],
+                ]);
                 $instances = F\map($info->get('Reservations'), function ($i) {
                     return current($i['Instances']);
                 });
@@ -85,7 +93,8 @@ class ConfigureLeaderCommand extends Command
                 $leader = false;
 
                 if (!empty($candidateInstances)) { //there are instances running
-                    if (count($candidateInstances) > 1) { // if there is more than one we sort by launch time and get the oldest
+                    if (count($candidateInstances) > 1) {
+                        // if there is more than one we sort by launch time and get the oldest
                         $this->info('More than one instance running, finding the oldest...');
                         $oldestInstance = F\sort($candidateInstances, function ($left, $right) {
                             return $left['LaunchTime'] > $right['LaunchTime'];
@@ -94,7 +103,8 @@ class ConfigureLeaderCommand extends Command
                         $this->info('Only one instance running...');
                         $oldestInstance = $candidateInstances[0];
                     }
-                    if ($oldestInstance['InstanceId'] == $result) { // if this instance is the oldest instance it's the leader
+                    if ($oldestInstance['InstanceId'] == $result) {
+                        // if this instance is the oldest instance it's the leader
                         $leader = true;
                     }
                 } else {
@@ -103,7 +113,8 @@ class ConfigureLeaderCommand extends Command
                 }
 
 
-                // No leader is running so we'll setup this one as the leader and create a cron entry to run the scheduler
+                // No leader is running so we'll setup this one as the leader
+                // and create a cron entry to run the scheduler
                 if ($leader) {
                     $this->info('We are the Leader! Initiating Cron Setup');
                     $this->call('system:start:cron');
@@ -119,10 +130,8 @@ class ConfigureLeaderCommand extends Command
                 // Probably be run from your local machine
                 $this->error('Did not detect an ec2 environment. Exiting.');
             }
-
         } else {
             $this->info('USE_CRON env var not set. Exiting.');
         }
-
     }
 }
