@@ -101,7 +101,7 @@ class ConfigureLeaderCommand extends Command
                         })[0];
                     } else {
                         $this->info('Only one instance running...');
-                        $oldestInstance = $candidateInstances[0];
+                        $oldestInstance = reset($candidateInstances);
                     }
                     if ($oldestInstance['InstanceId'] == $result) {
                         // if this instance is the oldest instance it's the leader
