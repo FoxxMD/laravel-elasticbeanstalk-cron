@@ -46,7 +46,7 @@ class SetupLeaderSelectionCRONCommand extends Command
         $overwrite = $this->option('overwrite');
 
         if (!$overwrite) {
-            $output = shell_exec('crontab -l');
+            $output = shell_exec('crontab -u webapp -l');
         } else {
             $this->info('Overwriting previous CRON contents...');
             $output = null;
@@ -65,7 +65,7 @@ class SetupLeaderSelectionCRONCommand extends Command
                 " /usr/bin/php /var/app/current/artisan aws:configure:leader >> /dev/null 2>&1" . PHP_EOL
             );
 
-            echo exec('crontab /tmp/crontab.txt');
+            echo exec('crontab -u webapp /tmp/crontab.txt');
         }
 
         $this->info('Leader Selection CRON Done!');

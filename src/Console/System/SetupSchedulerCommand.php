@@ -33,7 +33,7 @@ class SetupSchedulerCommand extends Command
         $overwrite = $this->option('overwrite');
 
         if (!$overwrite) {
-            $output = shell_exec('crontab -l');
+            $output = shell_exec('crontab -u webapp -l');
         } else {
             $this->info('Overwriting previous CRON contents...');
             $output = null;
@@ -45,7 +45,7 @@ class SetupSchedulerCommand extends Command
             // using opt..envvars makes sure that environmental variables are loaded before we run artisan
             // http://georgebohnisch.com/laravel-task-scheduling-working-aws-elastic-beanstalk-cron/
             file_put_contents('/tmp/crontab.txt', $output . '* * * * * . /opt/elasticbeanstalk/support/envvars && /usr/bin/php /var/app/current/artisan schedule:run >> /dev/null 2>&1' . PHP_EOL);
-            echo exec('crontab /tmp/crontab.txt');
+            echo exec('crontab -u webapp /tmp/crontab.txt');
         }
 
         $this->info('Schedule Cron Done!');
