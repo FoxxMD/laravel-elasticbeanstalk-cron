@@ -11,7 +11,7 @@
     ],
     "require": {
         "illuminate/support": "~5.1",
-        "aws/aws-sdk-php": "^3.18",
+        "aws/aws-sdk-php": "^3.26",
         "illuminate/console": "~5.1",
         "lstrojny/functional-php": "^1.2"
     },
