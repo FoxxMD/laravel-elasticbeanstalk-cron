@@ -3,6 +3,7 @@
 namespace FoxxMD\LaravelElasticBeanstalkCron\Console\System;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class SetupSchedulerCommand extends Command
 {
@@ -21,9 +22,12 @@ class SetupSchedulerCommand extends Command
      */
     protected $description = 'Configure this system\'s CRON to use Laravel\'s scheduler.';
 
-    public function __construct()
+    public function __construct(ConfigRepository $config)
     {
         parent::__construct();
+
+        $this->config = $config;
+
     }
 
     public function handle()
