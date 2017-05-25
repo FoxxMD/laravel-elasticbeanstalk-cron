@@ -56,7 +56,7 @@ class ConfigureLeaderCommand extends Command
         $this->info('Initializing Leader Selection...');
 
         // Only do cron setup if environment is configured to use it (This way we don't accidentally run on workers)
-        if (getenv('USE_CRON') == 'true') {
+        if ( (boolean)$this->config->get('elasticbeanstalkcron.enable', false) ) {
             //check to see if we are in an instance
             $ch = curl_init('http://169.254.169.254/latest/meta-data/instance-id'); //magic ip from AWS
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
