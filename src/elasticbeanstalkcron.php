@@ -5,11 +5,10 @@ return [
 
     /*
      |--------------------------------------------------------------------------
-     | INTERVAL
+     | Enable
      |--------------------------------------------------------------------------
      |
-     | The interval, in minutes, that a Leader Selection check should be
-     | run by the CRON
+     | Set the USE_CRON env variable to enable the cron. Defaults to false.
      |
      */
     'enable' => env('USE_CRON', false),
