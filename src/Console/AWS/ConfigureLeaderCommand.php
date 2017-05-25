@@ -39,20 +39,20 @@ class ConfigureLeaderCommand extends Command
 
         $this->config = $config;
 
-        $client = new Ec2Client([
-            'credentials' => [
-                'key' => $this->config->get('elasticbeanstalkcron.key'),
-                'secret' => $this->config->get('elasticbeanstalkcron.secret'),
-            ],
-            'region'  => $this->config->get('elasticbeanstalkcron.region'),
-            'version' => 'latest',
-        ]);
-
-        $this->ecClient = $client;
     }
 
     public function handle()
     {
+
+        $client = new Ec2Client([
+            'credentials' => [
+                'key' => $this->config->get('elasticbeanstalkcron.key', ''),
+                'secret' => $this->config->get('elasticbeanstalkcron.secret', ''),
+            ],
+            'region'  => $this->config->get('elasticbeanstalkcron.region', 'us-east-1'),
+            'version' => 'latest',
+        ]);
+
         $this->info('Initializing Leader Selection...');
 
         // Only do cron setup if environment is configured to use it (This way we don't accidentally run on workers)
@@ -66,7 +66,7 @@ class ConfigureLeaderCommand extends Command
                 $this->info('Instance ID: ' . $result);
 
                 // Get this instance metadata so we can find the environment it's running in
-                $tags = $info = $this->ecClient->describeInstances([
+                $tags = $info = $client->describeInstances([
                     'Filters' => [
                         [
                             'Name'   => 'instance-id',
@@ -84,7 +84,7 @@ class ConfigureLeaderCommand extends Command
                 $this->info('Getting Instances with Environment: ' . $environmentName);
 
                 // Get instances that have this environment tagged
-                $info = $this->ecClient->describeInstances([
+                $info = $client->describeInstances([
                     'Filters' => [
                         [
                             'Name'   => 'tag-value',
