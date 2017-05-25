@@ -5,6 +5,7 @@ namespace FoxxMD\LaravelElasticBeanstalkCron\Console\AWS;
 use Aws\Ec2\Ec2Client;
 use Functional as F;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class ConfigureLeaderCommand extends Command
 {
@@ -23,16 +24,27 @@ class ConfigureLeaderCommand extends Command
     protected $description = 'Configure leader ec2 instance';
 
     /**
+     * @var ConfigRepository
+     */
+    private $config;
+
+    /**
      * @var Ec2Client
      */
     protected $ecClient;
 
-    public function __construct()
+    public function __construct(ConfigRepository $config)
     {
         parent::__construct();
 
+        $this->config = $config;
+
         $client = new Ec2Client([
-            'region'  => getenv('AWS_REGION') ?: 'us-east-1',
+            'credentials' => [
+                'key' => $this->config->get('elasticbeanstalkcron.key'),
+                'secret' => $this->config->get('elasticbeanstalkcron.secret'),
+            ],
+            'region'  => $this->config->get('elasticbeanstalkcron.region'),
             'version' => 'latest',
         ]);
 
