@@ -42,9 +42,10 @@ class SetupSchedulerCommand extends Command
         if (!is_null($output) && strpos($output, 'schedule:run') !== false) {
             $this->info('Already found Scheduler entry! Not adding.');
         } else {
+            $path = $this->config->get('elasticbeanstalkcron.path', '/var/app/current/artisan');
             // using opt..envvars makes sure that environmental variables are loaded before we run artisan
             // http://georgebohnisch.com/laravel-task-scheduling-working-aws-elastic-beanstalk-cron/
-            file_put_contents('/tmp/crontab.txt', $output . '* * * * * . /opt/elasticbeanstalk/support/envvars && /usr/bin/php /var/app/current/artisan schedule:run >> /dev/null 2>&1' . PHP_EOL);
+            file_put_contents('/tmp/crontab.txt', $output . '* * * * * . /opt/elasticbeanstalk/support/envvars && /usr/bin/php ' . $path . ' schedule:run >> /dev/null 2>&1' . PHP_EOL);
             echo exec('crontab /tmp/crontab.txt');
         }
 
