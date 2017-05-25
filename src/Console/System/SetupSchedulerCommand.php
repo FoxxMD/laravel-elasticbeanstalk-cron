@@ -22,6 +22,11 @@ class SetupSchedulerCommand extends Command
      */
     protected $description = 'Configure this system\'s CRON to use Laravel\'s scheduler.';
 
+    /**
+     * @var ConfigRepository
+     */
+    private $config;
+
     public function __construct(ConfigRepository $config)
     {
         parent::__construct();
