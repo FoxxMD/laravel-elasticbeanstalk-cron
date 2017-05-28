@@ -25,7 +25,7 @@ class SetupLeaderSelectionCRONCommand extends Command
     /**
      * @var ConfigRepository
      */
-    private $config;
+    protected $config;
 
     /**
      * SetupLeaderSelectionCRONCommand constructor.

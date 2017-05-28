@@ -26,12 +26,7 @@ class ConfigureLeaderCommand extends Command
     /**
      * @var ConfigRepository
      */
-    private $config;
-
-    /**
-     * @var Ec2Client
-     */
-    protected $ecClient;
+    protected $config;
 
     public function __construct(ConfigRepository $config)
     {

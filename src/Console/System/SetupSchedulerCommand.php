@@ -25,7 +25,7 @@ class SetupSchedulerCommand extends Command
     /**
      * @var ConfigRepository
      */
-    private $config;
+    protected $config;
 
     public function __construct(ConfigRepository $config)
     {
