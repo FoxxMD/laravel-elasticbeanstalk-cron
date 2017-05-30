@@ -25,7 +25,7 @@ class SetupLeaderSelectionCRONCommand extends Command
     /**
      * @var ConfigRepository
      */
-    private $config;
+    protected $config;
 
     /**
      * SetupLeaderSelectionCRONCommand constructor.
@@ -56,13 +56,14 @@ class SetupLeaderSelectionCRONCommand extends Command
             $this->info('Already found Leader Selection entry! Not adding.');
         } else {
             $interval = $this->config->get('elasticbeanstalkcron.interval', 5);
+            $path = $this->config->get('elasticbeanstalkcron.path', '/var/app/current/artisan');
 
             // using opt..envvars makes sure that environmental variables are loaded before we run artisan
             // http://georgebohnisch.com/laravel-task-scheduling-working-aws-elastic-beanstalk-cron/
             file_put_contents(
                 '/tmp/crontab.txt',
                 $output . "*/$interval * * * * . /opt/elasticbeanstalk/support/envvars &&" .
-                " /usr/bin/php /var/app/current/artisan aws:configure:leader >> /dev/null 2>&1" . PHP_EOL
+                " /usr/bin/php $path aws:configure:leader >> /dev/null 2>&1" . PHP_EOL
             );
 
             echo exec('crontab /tmp/crontab.txt');

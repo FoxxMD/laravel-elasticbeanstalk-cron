@@ -5,6 +5,7 @@ namespace FoxxMD\LaravelElasticBeanstalkCron\Console\AWS;
 use Aws\Ec2\Ec2Client;
 use Functional as F;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class ConfigureLeaderCommand extends Command
 {
@@ -23,28 +24,34 @@ class ConfigureLeaderCommand extends Command
     protected $description = 'Configure leader ec2 instance';
 
     /**
-     * @var Ec2Client
+     * @var ConfigRepository
      */
-    protected $ecClient;
+    protected $config;
 
-    public function __construct()
+    public function __construct(ConfigRepository $config)
     {
         parent::__construct();
 
-        $client = new Ec2Client([
-            'region'  => getenv('AWS_REGION') ?: 'us-east-1',
-            'version' => 'latest',
-        ]);
+        $this->config = $config;
 
-        $this->ecClient = $client;
     }
 
     public function handle()
     {
+
+        $client = new Ec2Client([
+            'credentials' => [
+                'key' => $this->config->get('elasticbeanstalkcron.key', ''),
+                'secret' => $this->config->get('elasticbeanstalkcron.secret', ''),
+            ],
+            'region'  => $this->config->get('elasticbeanstalkcron.region', 'us-east-1'),
+            'version' => 'latest',
+        ]);
+
         $this->info('Initializing Leader Selection...');
 
         // Only do cron setup if environment is configured to use it (This way we don't accidentally run on workers)
-        if (getenv('USE_CRON') == 'true') {
+        if ( (boolean)$this->config->get('elasticbeanstalkcron.enable', false) ) {
             //check to see if we are in an instance
             $ch = curl_init('http://169.254.169.254/latest/meta-data/instance-id'); //magic ip from AWS
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
@@ -54,7 +61,7 @@ class ConfigureLeaderCommand extends Command
                 $this->info('Instance ID: ' . $result);
 
                 // Get this instance metadata so we can find the environment it's running in
-                $tags = $info = $this->ecClient->describeInstances([
+                $tags = $info = $client->describeInstances([
                     'Filters' => [
                         [
                             'Name'   => 'instance-id',
@@ -72,7 +79,7 @@ class ConfigureLeaderCommand extends Command
                 $this->info('Getting Instances with Environment: ' . $environmentName);
 
                 // Get instances that have this environment tagged
-                $info = $this->ecClient->describeInstances([
+                $info = $client->describeInstances([
                     'Filters' => [
                         [
                             'Name'   => 'tag-value',
