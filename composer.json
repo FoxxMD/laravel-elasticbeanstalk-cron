@@ -19,5 +19,12 @@
         "psr-4": {
             "FoxxMD\\LaravelElasticBeanstalkCron\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "FoxxMD\\LaravelElasticBeanstalkCron\\ElasticBeanstalkCronProvider"
+            ]
+        }
     }
 }
