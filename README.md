@@ -1,4 +1,4 @@
-# Laravel 5 Task Scheduler with Elastic Beanstalk
+# Laravel 5+ Task Scheduler with Elastic Beanstalk
 
 *Ensure one instance in an Elastic Beanstalk environment is running Laravel's Scheduler*
 
@@ -43,7 +43,14 @@ Now only one instance, the earliest launched, will have the scheduler inserted i
 
 ## Installation
 
-Require this package  
+Require this package with the correct version based on Laravel
+
+* Laravel 5.x -- ^0.5
+* Laravel 6.x -- ^0.6
+* Laravel 7.x -- ^0.7
+* Laravel 8.x -- ^0.8
+
+EX Laravel 6.1 => `composer require "foxxmd/laravel-elasticbeanstalk-cron@^0.6"`
 
 ```php
 composer require "foxxmd/laravel-elasticbeanstalk-cron"
@@ -64,12 +71,12 @@ php artisan vendor:publish --tag=ebcron
 ## Configuration
 
 In order for Leader Selection to run a few environmental variables must be present:
- 
+
 * **USE_CRON** = true -- Must be set in order for Leader Selection to occur. (This can be used to prevent Selection from occurring on undesired environments IE Workers, etc.)
 * **AWS_ACCESS_KEY_ID** -- Needed for read-only access to ec2 client
 * **AWS_SECRET_ACCESS_KEY** -- Needed for read-only access to ec2 client
 * **AWS_REGION** -- Sets which AWS region when looking using the ec2 client, defaults to `us-east-1` if not set.
- 
+
 These can be included in your **.env** or, for EB, in the environment's configuration section.
 
 ## Contributing
