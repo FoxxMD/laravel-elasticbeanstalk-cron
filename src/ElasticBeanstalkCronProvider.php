@@ -1,8 +1,6 @@
 <?php
 
-
 namespace FoxxMD\LaravelElasticBeanstalkCron;
-
 
 use FoxxMD\LaravelElasticBeanstalkCron\Console\AWS\ConfigureLeaderCommand;
 use FoxxMD\LaravelElasticBeanstalkCron\Console\System\SetupLeaderSelectionCRONCommand;
@@ -25,8 +23,8 @@ class ElasticBeanstalkCronProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-                             __DIR__.'/.ebextensions' => base_path('/.ebextensions'),
-                             __DIR__.'/elasticbeanstalkcron.php' => config_path('elasticbeanstalkcron.php')
+                             __DIR__ . '/.platform' => base_path('/.platform'),
+                             __DIR__ . '/elasticbeanstalkcron.php' => config_path('elasticbeanstalkcron.php')
                          ], 'ebcron');
     }
 
