@@ -41,13 +41,13 @@ class SetupSchedulerCommand extends Command
         $overwrite = $this->option('overwrite');
 
         if (!$overwrite) {
-            $output = shell_exec('crontab -l');
+            $output = shell_exec('crontab -l 2> /dev/null || true');
         } else {
             $this->info('Overwriting previous CRON contents...');
             $output = null;
         }
 
-        if (!is_null($output) && strpos($output, 'schedule:run') !== false) {
+        if (!empty($output) && strpos($output, 'schedule:run') !== false) {
             $this->info('Already found Scheduler entry! Not adding.');
         } else {
             $path = $this->config->get('elasticbeanstalkcron.path', '/var/app/current/artisan');

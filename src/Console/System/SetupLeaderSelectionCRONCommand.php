@@ -46,13 +46,13 @@ class SetupLeaderSelectionCRONCommand extends Command
         $overwrite = $this->option('overwrite');
 
         if (!$overwrite) {
-            $output = shell_exec('crontab -l');
+            $output = shell_exec('crontab -l 2> /dev/null || true');
         } else {
             $this->info('Overwriting previous CRON contents...');
             $output = null;
         }
 
-        if (!is_null($output) && strpos($output, 'aws:configure:leader') !== false) {
+        if (!empty($output) && strpos($output, 'aws:configure:leader') !== false) {
             $this->info('Already found Leader Selection entry! Not adding.');
         } else {
             $interval = $this->config->get('elasticbeanstalkcron.interval', 5);
