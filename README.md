@@ -51,7 +51,7 @@ Now only one instance, the earliest launched, will have the scheduler inserted i
 
 Require this package
 
-```php
+```bash
 composer require "foxxmd/laravel-elasticbeanstalk-cron"
 ```
 
