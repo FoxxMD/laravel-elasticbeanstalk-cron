@@ -1,4 +1,4 @@
-# Laravel 5+ Task Scheduler with Elastic Beanstalk
+# Laravel 5 - 8.x Task Scheduler with Elastic Beanstalk
 
 *Ensure one instance in an Elastic Beanstalk environment is running Laravel's Scheduler*
 
@@ -43,14 +43,7 @@ Now only one instance, the earliest launched, will have the scheduler inserted i
 
 ## Installation
 
-Require this package with the correct version based on Laravel
-
-* Laravel 5.x -- ^0.5
-* Laravel 6.x -- ^0.6
-* Laravel 7.x -- ^0.7
-* Laravel 8.x -- ^0.8
-
-EX Laravel 6.1 => `composer require "foxxmd/laravel-elasticbeanstalk-cron@^0.6"`
+Require this package
 
 ```php
 composer require "foxxmd/laravel-elasticbeanstalk-cron"
