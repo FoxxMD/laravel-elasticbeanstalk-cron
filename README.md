@@ -8,15 +8,21 @@ Although Amazon has provided a [solution](http://stackoverflow.com/a/28719447/14
 
 **This package provides a simple, zero-setup solution for maintaining one instance within an Elastic Beanstalk environment that runs the Task Scheduler.**
 
+## Amazon Linux 1 deprecation
+
+Amazon Linux 1 (AL1) is going to be unsupported soon, it is advised to migrate to use Amazon Linux 2 (AL2)
+https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.migration-al.html
+Starts from this release will only support AL2, please use previous releases for use in AL1
+
 ## How Does It Work?
 
-Glad you asked! The below process **is completely automated** and only requires that you publish the `.ebextensions` folder to the root of your application.
+Glad you asked! The below process **is completely automated** and only requires that you publish the `.platform` folder to the root of your application.
 
 ### 1. Use Elastic Beanstalk's Advanced Configuration to run CRON setup commands
 
-EB applications can contain a [folder](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/ebextensions.html) that provides advanced configuration for an EB environment, called `.ebextensions`.
+EB applications since AL2 can contain [platform hooks](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/platforms-linux-extend.html) that provides advanced configuration for an EB environment, called `.platform`.
 
-This package provides a configuration file that runs two commands on deployment (every instance initialization) that setup the conditions needed to run the Task Schedler on one instance:
+This package provides a configuration file that runs two commands on deployment (every instance initialization) that setup the conditions needed to run the Task Scheduler on one instance:
 
 ### 2. Run `system:start:leaderselection`
 
@@ -43,22 +49,34 @@ Now only one instance, the earliest launched, will have the scheduler inserted i
 
 ## Installation
 
-Require this package
+Require this package, for Amazon Linux 2,
 
-```php
+```bash
 composer require "foxxmd/laravel-elasticbeanstalk-cron"
 ```
 
-After adding the package, add the ServiceProvider to the providers array in `config/app.php`
+or for Amazon Linux 1,
+
+```bash
+composer require "foxxmd/laravel-elasticbeanstalk-cron@^0.9"
+```
+
+After adding the package, add the ServiceProvider to the providers array in `config/app.php` (for Laravel 5.4 or lower)
 
 ```php
 \FoxxMD\LaravelElasticBeanstalkCron\ElasticBeanstalkCronProvider::class
 ```
 
-Then, publish the **.ebextensions** folder and configuration file.
+Then, publish the **.platform** folder and configuration file
 
-```php
+```bash
 php artisan vendor:publish --tag=ebcron
+```
+
+Don't forget to add +x permission to the EB Platform Hooks scripts
+
+```bash
+find .platform -type f -iname "*.sh" -exec chmod +x {} +
 ```
 
 ## Configuration
@@ -66,9 +84,9 @@ php artisan vendor:publish --tag=ebcron
 In order for Leader Selection to run a few environmental variables must be present:
 
 * **USE_CRON** = true -- Must be set in order for Leader Selection to occur. (This can be used to prevent Selection from occurring on undesired environments IE Workers, etc.)
-* **AWS_ACCESS_KEY_ID** -- Needed for read-only access to ec2 client
-* **AWS_SECRET_ACCESS_KEY** -- Needed for read-only access to ec2 client
-* **AWS_REGION** -- Sets which AWS region when looking using the ec2 client, defaults to `us-east-1` if not set.
+* **AWS_ACCESS_KEY_ID** -- Needed for read-only access to EC2 client
+* **AWS_SECRET_ACCESS_KEY** -- Needed for read-only access to EC2 client
+* **AWS_REGION** -- Sets which AWS region when looking using the EC2 client, defaults to `us-east-1` if not set.
 
 These can be included in your **.env** or, for EB, in the environment's configuration section.
 
