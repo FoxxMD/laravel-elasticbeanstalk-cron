@@ -33,7 +33,6 @@ class ConfigureLeaderCommand extends Command
         parent::__construct();
 
         $this->config = $config;
-
     }
 
     public function handle()
@@ -51,21 +50,31 @@ class ConfigureLeaderCommand extends Command
         $this->info('Initializing Leader Selection...');
 
         // Only do cron setup if environment is configured to use it (This way we don't accidentally run on workers)
-        if ( (boolean)$this->config->get('elasticbeanstalkcron.enable', false) ) {
-            //check to see if we are in an instance
-            $ch = curl_init('http://169.254.169.254/latest/meta-data/instance-id'); //magic ip from AWS
+        if ((bool) $this->config->get('elasticbeanstalkcron.enable', false)) {
+            // AL2 is using IMDSv2 which use session token
+            // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html
+
+            // get token first, check to see if we are in an instance
+            $ch = curl_init('http://169.254.169.254/latest/api/token'); //magic ip from AWS
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-aws-ec2-metadata-token-ttl-seconds: 21600']);
 
-            if ($result = curl_exec($ch)) {
-                $this->info('Instance ID: ' . $result);
+            if ($token = curl_exec($ch)) {
+                $ch = curl_init('http://169.254.169.254/latest/meta-data/instance-id');
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-aws-ec2-metadata-token: ' . $token]);
+                $instanceId = curl_exec($ch);
+                $this->info('Instance ID: ' . $instanceId);
 
                 // Get this instance metadata so we can find the environment it's running in
                 $tags = $info = $client->describeInstances([
                     'Filters' => [
                         [
                             'Name'   => 'instance-id',
-                            'Values' => [$result],
+                            'Values' => [$instanceId],
                         ],
                     ],
                 ])->get('Reservations')[0]['Instances'][0]['Tags'];
@@ -110,7 +119,7 @@ class ConfigureLeaderCommand extends Command
                         $this->info('Only one instance running...');
                         $oldestInstance = reset($candidateInstances);
                     }
-                    if ($oldestInstance['InstanceId'] == $result) {
+                    if ($oldestInstance['InstanceId'] == $instanceId) {
                         // if this instance is the oldest instance it's the leader
                         $leader = true;
                     }
@@ -118,7 +127,6 @@ class ConfigureLeaderCommand extends Command
                     $this->info('No candidate instances found. \'O Brave New World!');
                     $leader = true;
                 }
-
 
                 // No leader is running so we'll setup this one as the leader
                 // and create a cron entry to run the scheduler
@@ -130,7 +138,6 @@ class ConfigureLeaderCommand extends Command
                     $this->info('We are not a leader instance :( Maybe next time...');
                     $this->info('Leader should be running on Instance ' . $leader['InstanceId']);
                 }
-
 
                 $this->info('Leader Selection Done!');
             } else {
