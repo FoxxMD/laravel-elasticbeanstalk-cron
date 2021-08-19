@@ -49,10 +49,16 @@ Now only one instance, the earliest launched, will have the scheduler inserted i
 
 ## Installation
 
-Require this package
+Require this package, for Amazon Linux 2,
 
 ```bash
 composer require "foxxmd/laravel-elasticbeanstalk-cron"
+```
+
+or for Amazon Linux 1,
+
+```bash
+composer require "foxxmd/laravel-elasticbeanstalk-cron@^0.9"
 ```
 
 After adding the package, add the ServiceProvider to the providers array in `config/app.php` (for Laravel 5.4 or lower)
@@ -61,7 +67,7 @@ After adding the package, add the ServiceProvider to the providers array in `con
 \FoxxMD\LaravelElasticBeanstalkCron\ElasticBeanstalkCronProvider::class
 ```
 
-Then, publish the **.platform** folder and configuration file.
+Then, publish the **.platform** folder and configuration file
 
 ```bash
 php artisan vendor:publish --tag=ebcron
