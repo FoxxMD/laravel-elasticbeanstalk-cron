@@ -113,7 +113,7 @@ class ConfigureLeaderCommand extends Command
                         // if there is more than one we sort by launch time and get the oldest
                         $this->info('More than one instance running, finding the oldest...');
                         $oldestInstance = F\sort($candidateInstances, function ($left, $right) {
-                            return $left['LaunchTime'] > $right['LaunchTime'];
+                            return $left['LaunchTime'] <=> $right['LaunchTime'];
                         })[0];
                     } else {
                         $this->info('Only one instance running...');
