@@ -136,7 +136,7 @@ class ConfigureLeaderCommand extends Command
                 } else {
                     // Instance was found, don't do any cron stuff
                     $this->info('We are not a leader instance :( Maybe next time...');
-                    $this->info('Leader should be running on Instance ' . $leader['InstanceId']);
+                    $this->info('Leader should be running on Instance ' . $oldestInstance['InstanceId']);
                 }
 
                 $this->info('Leader Selection Done!');
