@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 # Prepare bash importable env file
-sed -E -n 's/[^#]+/export &/ p' /opt/elasticbeanstalk/deployment/env > /opt/elasticbeanstalk/deployment/envvars
+sed -r -n 's/.+=/export &"/p' /opt/elasticbeanstalk/deployment/env | sed -r -n 's/.+/&"/p' > /opt/elasticbeanstalk/deployment/envvars
