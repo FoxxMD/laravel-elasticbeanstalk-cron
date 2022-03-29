@@ -63,7 +63,7 @@ class SetupLeaderSelectionCRONCommand extends Command
             // (this link is for AL1, AL2 need a workaround to get the same envvars file, see .platform folder)
             file_put_contents(
                 '/tmp/crontab.txt',
-                $output . "*/$interval * * * * . /opt/elasticbeanstalk/deployment/envvars &&" .
+                $output . "*/$interval * * * * " .
                 " /usr/bin/php $path aws:configure:leader >> /dev/null 2>&1" . PHP_EOL
             );
 
