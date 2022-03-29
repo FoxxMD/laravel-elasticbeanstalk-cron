@@ -1,5 +1,5 @@
 {
-    "name": "foxxmd/laravel-elasticbeanstalk-cron",
+    "name": "cyber-duck/laravel-elasticbeanstalk-cron",
     "description": "Ensure only one Laravel instance is running CRON jobs in an EB environment",
     "type": "library",
     "license": "MIT",
