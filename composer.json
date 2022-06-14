@@ -13,7 +13,7 @@
         "illuminate/support": "5 - 9",
         "illuminate/console": "5 - 9",
         "aws/aws-sdk-php": "^3.26",
-        "lstrojny/functional-php": "^1.2"
+        "lstrojny/functional-php": "^1.17"
     },
     "autoload": {
         "psr-4": {
