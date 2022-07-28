@@ -23,17 +23,17 @@ class ElasticBeanstalkCronProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-                             __DIR__ . '/.platform' => base_path('/.platform'),
-                             __DIR__ . '/elasticbeanstalkcron.php' => config_path('elasticbeanstalkcron.php')
-                         ], 'ebcron');
+            __DIR__ . '/.platform' => base_path('/.platform'),
+            __DIR__ . '/elasticbeanstalkcron.php' => config_path('elasticbeanstalkcron.php')
+        ], 'ebcron');
     }
 
     protected function registerConsoleCommands()
     {
         $this->commands([
-                            ConfigureLeaderCommand::class,
-                            SetupLeaderSelectionCRONCommand::class,
-                            SetupSchedulerCommand::class
-                        ]);
+            ConfigureLeaderCommand::class,
+            SetupLeaderSelectionCRONCommand::class,
+            SetupSchedulerCommand::class
+        ]);
     }
 }
