@@ -10,9 +10,9 @@
         }
     ],
     "require": {
-        "illuminate/support": "5 - 9",
-        "illuminate/console": "5 - 9",
-        "aws/aws-sdk-php": "^3.26",
+        "illuminate/support": "^10.0",
+        "illuminate/console": "^10.0",
+        "aws/aws-sdk-php": "^3.257",
         "lstrojny/functional-php": "^1.17"
     },
     "autoload": {
