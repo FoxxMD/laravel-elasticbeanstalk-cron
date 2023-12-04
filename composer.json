@@ -1,5 +1,5 @@
 {
-    "name": "foxxmd/laravel-elasticbeanstalk-cron",
+    "name": "cyber-duck/laravel-elasticbeanstalk-cron",
     "description": "Ensure only one Laravel instance is running CRON jobs in an EB environment",
     "type": "library",
     "license": "MIT",
@@ -10,8 +10,8 @@
         }
     ],
     "require": {
-        "illuminate/support": "5 - 9",
-        "illuminate/console": "5 - 9",
+        "illuminate/support": "5 - 10",
+        "illuminate/console": "5 - 10",
         "aws/aws-sdk-php": "^3.26",
         "lstrojny/functional-php": "^1.17"
     },
