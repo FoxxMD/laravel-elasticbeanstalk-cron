@@ -1,4 +1,4 @@
-# Laravel 5 - 9.x Task Scheduler with Elastic Beanstalk
+# Laravel 6 - 12.x Task Scheduler with Elastic Beanstalk
 
 *Ensure one instance in an Elastic Beanstalk environment is running Laravel's Scheduler*
 
@@ -8,11 +8,11 @@ Although Amazon has provided a [solution](http://stackoverflow.com/a/28719447/14
 
 **This package provides a simple, zero-setup solution for maintaining one instance within an Elastic Beanstalk environment that runs the Task Scheduler.**
 
-## Amazon Linux 1 deprecation
+## Amazon Linux 1 is deprecated and Amazon Linux 2023 is recommended
 
-Amazon Linux 1 (AL1) is going to be unsupported soon, it is advised to migrate to use Amazon Linux 2 (AL2)
+Amazon Linux 1 (AL1) is already retired, even Amazon Linux 2 (AL2) will soon going to be unsupported too, so it's recommended to migrate to use Amazon Linux 2023 (AL2023)
 https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.migration-al.html
-Starts from this release will only support AL2, please use previous releases for use in AL1
+Starts from this release will only support AL2023, please use previous releases for use in AL2, with this release will also drop support for Laravel 5 (PHP 7) since EB only support starting from PHP 8.1
 
 ## How Does It Work?
 
@@ -41,7 +41,7 @@ If this instance is the earliest launched then it is deemed the **Leader** and r
 
 ### 4. Run `system:start:cron`
 
-This command is run **only if the current instance running Leader Selection is the Leader**. It inserts another entry in the instance's Cron to run [Laravel's Scheduler](https://laravel.com/docs/5.1/scheduling).
+This command is run **only if the current instance running Leader Selection is the Leader**. It inserts another entry in the instance's Cron to run [Laravel's Scheduler](https://laravel.com/docs/12.x/scheduling).
 
 ### That's it!
 
@@ -49,22 +49,10 @@ Now only one instance, the earliest launched, will have the scheduler inserted i
 
 ## Installation
 
-Require this package, for Amazon Linux 2,
+Require this package
 
 ```bash
 composer require "foxxmd/laravel-elasticbeanstalk-cron"
-```
-
-or for Amazon Linux 1,
-
-```bash
-composer require "foxxmd/laravel-elasticbeanstalk-cron@^0.9"
-```
-
-After adding the package, add the ServiceProvider to the providers array in `config/app.php` (for Laravel 5.4 or lower)
-
-```php
-\FoxxMD\LaravelElasticBeanstalkCron\ElasticBeanstalkCronProvider::class
 ```
 
 Then, publish the **.platform** folder and configuration file
@@ -73,7 +61,7 @@ Then, publish the **.platform** folder and configuration file
 php artisan vendor:publish --tag=ebcron
 ```
 
-Don't forget to add +x permission to the EB Platform Hooks scripts
+Don't forget to add +x permission to the EB Platform Hooks scripts ([no longer required for Amazon Linux platform that released on or after April 29, 2022](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/platforms-linux-extend.hooks.html#platforms-linux-extend.hooks.more))
 
 ```bash
 find .platform -type f -iname "*.sh" -exec chmod +x {} +
