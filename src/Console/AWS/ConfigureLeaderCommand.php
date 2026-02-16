@@ -37,12 +37,7 @@ class ConfigureLeaderCommand extends Command
 
     public function handle()
     {
-
         $client = new Ec2Client([
-            'credentials' => [
-                'key' => $this->config->get('elasticbeanstalkcron.key', ''),
-                'secret' => $this->config->get('elasticbeanstalkcron.secret', ''),
-            ],
             'region'  => $this->config->get('elasticbeanstalkcron.region', 'us-east-1'),
             'version' => 'latest',
         ]);
