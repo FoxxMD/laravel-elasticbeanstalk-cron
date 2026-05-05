@@ -1,4 +1,4 @@
-# Laravel 6 - 12.x Task Scheduler with Elastic Beanstalk
+# Laravel 6 - 13.x Task Scheduler with Elastic Beanstalk
 
 *Ensure one instance in an Elastic Beanstalk environment is running Laravel's Scheduler*
 
@@ -8,11 +8,13 @@ Although Amazon has provided a [solution](http://stackoverflow.com/a/28719447/14
 
 **This package provides a simple, zero-setup solution for maintaining one instance within an Elastic Beanstalk environment that runs the Task Scheduler.**
 
-## Amazon Linux 1 is deprecated and Amazon Linux 2023 is recommended
+## Amazon Linux 1 and Amazon Linux 2 are deprecated — Amazon Linux 2023 is required
 
-Amazon Linux 1 (AL1) is already retired, even Amazon Linux 2 (AL2) will soon going to be unsupported too, so it's recommended to migrate to use Amazon Linux 2023 (AL2023)
+Amazon Linux 1 (AL1) is retired and Amazon Linux 2 (AL2) PHP platforms were removed from Elastic Beanstalk on April 16, 2026. You must use Amazon Linux 2023 (AL2023).
 https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.migration-al.html
-Starts from this release will only support AL2023, please use previous releases for use in AL2, with this release will also drop support for Laravel 5 (PHP 7) since EB only support starting from PHP 8.1
+https://docs.aws.amazon.com/elasticbeanstalk/latest/platforms/platform-history-php.html
+
+This release only supports AL2023. Please use previous releases for AL2.
 
 ## How Does It Work?
 
@@ -41,7 +43,7 @@ If this instance is the earliest launched then it is deemed the **Leader** and r
 
 ### 4. Run `system:start:cron`
 
-This command is run **only if the current instance running Leader Selection is the Leader**. It inserts another entry in the instance's Cron to run [Laravel's Scheduler](https://laravel.com/docs/12.x/scheduling).
+This command is run **only if the current instance running Leader Selection is the Leader**. It inserts another entry in the instance's Cron to run [Laravel's Scheduler](https://laravel.com/docs/13.x/scheduling).
 
 ### That's it!
 
@@ -72,10 +74,27 @@ find .platform -type f -iname "*.sh" -exec chmod +x {} +
 In order for Leader Selection to run a few environmental variables must be present:
 
 * **USE_CRON** = true -- Must be set in order for Leader Selection to occur. (This can be used to prevent Selection from occurring on undesired environments IE Workers, etc.)
-* **AWS_REGION** -- Sets which AWS region when looking using the EC2 client, defaults to `us-east-1` if not set.
 
 These can be included in your **.env** or, for EB, in the environment's configuration section.
-Package will use EC2 instance profile for AWS calls.
+
+Package uses the EC2 instance profile for credentials. Region is resolved from the `AWS_REGION` environment variable if set, otherwise it is auto-detected from EC2 instance metadata (IMDS).
+
+### IAM Permissions
+
+The EC2 instance profile must have `ec2:DescribeInstances` permission for leader selection to work. Add the following inline policy to your EB instance role:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "ec2:DescribeInstances",
+            "Resource": "*"
+        }
+    ]
+}
+```
 
 ## Contributing
 

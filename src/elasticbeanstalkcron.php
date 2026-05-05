@@ -37,16 +37,17 @@ return [
      */
     'path' => '/var/app/current/artisan',
 
+
     /*
      |--------------------------------------------------------------------------
      | AWS REGION
      |--------------------------------------------------------------------------
      |
-     | Sets which AWS region when looking using the ec2 client,
-     | defaults to us-east-1 if not set.
+     | The AWS region for the EC2 client. Resolved from AWS_REGION or
+     | AWS_DEFAULT_REGION env var. Falls back to IMDS if neither is set.
      |
      */
-    'region' => env('AWS_REGION', 'us-east-1'),
+    'region' => env('AWS_REGION', env('AWS_DEFAULT_REGION')),
 
 
 ];

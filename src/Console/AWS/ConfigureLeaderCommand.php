@@ -37,11 +37,6 @@ class ConfigureLeaderCommand extends Command
 
     public function handle()
     {
-        $client = new Ec2Client([
-            'region'  => $this->config->get('elasticbeanstalkcron.region', 'us-east-1'),
-            'version' => 'latest',
-        ]);
-
         $this->info('Initializing Leader Selection...');
 
         // Only do cron setup if environment is configured to use it (This way we don't accidentally run on workers)
@@ -57,6 +52,22 @@ class ConfigureLeaderCommand extends Command
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-aws-ec2-metadata-token-ttl-seconds: 21600']);
 
             if ($token = curl_exec($ch)) {
+                // Resolve region from config (which reads AWS_REGION/AWS_DEFAULT_REGION env vars),
+                // fall back to IMDS if not set
+                $region = $this->config->get('elasticbeanstalkcron.region');
+                if (empty($region)) {
+                    $ch = curl_init('http://169.254.169.254/latest/meta-data/placement/region');
+                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-aws-ec2-metadata-token: ' . $token]);
+                    $region = curl_exec($ch) ?: 'us-east-1';
+                }
+
+                $client = new Ec2Client([
+                    'region'  => $region,
+                    'version' => 'latest',
+                ]);
+
                 $ch = curl_init('http://169.254.169.254/latest/meta-data/instance-id');
                 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
